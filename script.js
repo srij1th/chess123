@@ -52,7 +52,10 @@ async function apiPost(path, data) {
 }
 
 async function apiGet(path) {
-  const res = await fetchWithTimeout(API + path, {});
+  const url = path + (path.includes("?") ? "&" : "?") + "_t=" + Date.now();
+  const res = await fetchWithTimeout(API + url, {
+    cache: "no-store"
+  });
   return res.json();
 }
 
@@ -310,6 +313,7 @@ function stopRedirectTicker() {
 }
 
 function showGameEndPopup(resultText) {
+  apiPost("/update-stats", {});
   const modal = document.getElementById("gameEndModal");
   const resultEl = document.getElementById("modalResultText");
   const redirectEl = document.getElementById("modalRedirectText");

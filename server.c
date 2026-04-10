@@ -419,6 +419,15 @@ static void handle_api(SOCKET client, const char *path, const char *body) {
         return;
     }
 
+    if (path_is(path, "/update-stats")) {
+        if (g_app.game_active) {
+            check_timeout_and_update_result();
+            update_game_status();
+        }
+        send_json(client, "{\"ok\":true}");
+        return;
+    }
+
     if (!g_app.logged_in) {
         send_error_json(client, "Please login first.");
         return;
@@ -656,7 +665,7 @@ static void handle_client(SOCKET client) {
     if (path_is(path, "/login") || path_is(path, "/signup") || path_is(path, "/start-game") ||
         path_is(path, "/move") || path_is(path, "/ai-move") || path_is(path, "/get-board") ||
         path_is(path, "/get-stats") || path_is(path, "/settings") || path_is(path, "/reset-stats") ||
-        path_is(path, "/logout")) {
+        path_is(path, "/update-stats") || path_is(path, "/logout")) {
         handle_api(client, path, body);
     } else {
         serve_file(client, path);
